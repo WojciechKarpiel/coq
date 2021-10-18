@@ -15,7 +15,7 @@ open Constrintern
 
 (* Commands of the interface: Constant definitions *)
 
-let red_constant_body red_opt env sigma body = match red_opt with
+let red_constant_body red_opt env sigma body = print_string "hehe"; match red_opt with
   | None -> sigma, body
   | Some red ->
     let red, _ = reduction_of_red_expr env red in

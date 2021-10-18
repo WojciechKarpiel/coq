@@ -130,6 +130,11 @@ type definition_expr =
   | ProveBody of local_binder_expr list * constr_expr
   | DefineBody of local_binder_expr list * Genredexpr.raw_red_expr option * constr_expr
       * constr_expr option
+type eloziom = {
+  red: Genredexpr.raw_red_expr option;
+      expr: constr_expr
+    }
+let doce : eloziom option -> constr_expr option = Option.map (fun x -> x.expr)
 
 type notation_format =
   | TextFormat of lstring
@@ -159,7 +164,7 @@ type 'a fix_expr_gen =
   ; rec_order : 'a
   ; binders : local_binder_expr list
   ; rtype : constr_expr
-  ; body_def : constr_expr option
+  ; body_def : eloziom option
   ; notations : decl_notation list
   }
 

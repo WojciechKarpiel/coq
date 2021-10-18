@@ -340,7 +340,7 @@ let do_fixpoint ~pm ~scope ~poly ?typing_flags ?using l =
     | [Some { CAst.v = CWfRec (n,r) }],
       [ Vernacexpr.{fname={CAst.v=id}; univs; binders; rtype; body_def; notations} ] ->
         let recarg = mkIdentC n.CAst.v in
-        build_wellfounded pm (id, univs, binders, rtype, out_def body_def) poly ?typing_flags ?using r recarg notations
+        build_wellfounded pm (id, univs, binders, rtype, out_def (Vernacexpr.doce (*TUTAJ*) body_def)) poly ?typing_flags ?using r recarg notations
 
     | [Some { CAst.v = CMeasureRec (n, m, r) }],
       [Vernacexpr.{fname={CAst.v=id}; univs; binders; rtype; body_def; notations }] ->
@@ -353,7 +353,7 @@ let do_fixpoint ~pm ~scope ~poly ?typing_flags ?using l =
           user_err Pp.(str"Measure takes only two arguments in Program Fixpoint.")
         | _, _ -> r
       in
-        build_wellfounded pm (id, univs, binders, rtype, out_def body_def) poly ?typing_flags ?using
+        build_wellfounded pm (id, univs, binders, rtype, out_def (Vernacexpr.doce body_def)) poly ?typing_flags ?using
           (Option.default (CAst.make @@ CRef (lt_ref,None)) r) m notations
 
     | _, _ when List.for_all (fun ro -> match ro with None | Some { CAst.v = CStructRec _} -> true | _ -> false) g ->

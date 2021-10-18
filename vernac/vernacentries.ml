@@ -684,6 +684,7 @@ let vernac_definition ~atts ~pm (discharge, kind) (lid, pl) bl red_option c typ_
       let env = Global.env () in
       let sigma = Evd.from_env env in
       Some (snd (Hook.get f_interp_redexp env sigma r)) in
+  let ()  = (if Option.has_some red_option then print_string "XD" else print_string "DDDD") in
   if program_mode then
     let kind = Decls.IsDefinition kind in
     ComDefinition.do_definition_program ~pm ~name:name.v
@@ -2202,7 +2203,7 @@ let translate_vernac ?loc ~atts v = let open Vernacextend in match v with
     vtdefault(fun () -> with_def_attributes ~atts vernac_assumption discharge kind l nl)
   | VernacInductive (finite, l) ->
     vtdefault(fun () -> vernac_inductive ~atts finite l)
-  | VernacFixpoint (discharge, l) ->
+  | VernacFixpoint ( discharge, l) ->
     let opens = List.exists (fun { body_def } -> Option.is_empty body_def) l in
     if opens then
       vtopenproof (fun () ->

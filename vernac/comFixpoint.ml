@@ -126,7 +126,7 @@ let interp_fix_body ~program_mode env_rec sigma impls (_,ctx) fix ccl =
   Option.cata (fun body ->
     let env = push_rel_context ctx env_rec in
     let sigma, body = interp_casted_constr_evars ~program_mode env sigma ~impls body ccl in
-    sigma, Some (it_mkLambda_or_LetIn body ctx)) (sigma, None) fix.Vernacexpr.body_def
+    sigma, Some (it_mkLambda_or_LetIn body ctx)) (sigma, None) (Vernacexpr.doce fix.Vernacexpr.body_def)
 
 let build_fix_type (_,ctx) ccl = EConstr.it_mkProd_or_LetIn ccl ctx
 

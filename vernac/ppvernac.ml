@@ -503,7 +503,7 @@ let pr_rec_definition { fname; univs; rec_order; binders; rtype; body_def; notat
   let annot = pr_guard_annot pr_lconstr_expr binders rec_order in
   pr_ident_decl (fname,univs) ++ pr_binders_arg binders ++ annot
   ++ pr_type_option (fun c -> spc() ++ pr_lconstr_expr c) rtype
-  ++ pr_opt (fun def -> str":=" ++ brk(1,2) ++ pr_pure_lconstr def) body_def
+  ++ pr_opt (fun def -> str":=" ++ brk(1,2) ++ pr_pure_lconstr def) (Vernacexpr.doce body_def)
   ++ prlist (pr_decl_notation @@ pr_constr) notations
 
 let pr_statement head (idpl,(bl,c)) =
@@ -891,7 +891,7 @@ let pr_vernac_expr v =
     let pr_onecorec {fname; univs; binders; rtype; body_def; notations } =
       pr_ident_decl (fname,univs) ++ spc() ++ pr_binders binders ++ spc() ++ str":" ++
       spc() ++ pr_lconstr_expr rtype ++
-      pr_opt (fun def -> str":=" ++ brk(1,2) ++ pr_lconstr def) body_def ++
+      pr_opt (fun def -> str":=" ++ brk(1,2) ++ pr_lconstr def) (Vernacexpr.doce body_def) ++
       prlist (pr_decl_notation @@ pr_constr) notations
     in
     return (
