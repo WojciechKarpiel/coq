@@ -27,7 +27,7 @@ val do_fixpoint
   -> poly:bool
   -> ?typing_flags:Declarations.typing_flags
   -> ?using:Vernacexpr.section_subset_expr
-  -> fixpoint_expr list
+  -> (Vernacexpr.fixpoint_expr * (Redexpr.red_expr option)) list
   -> unit
 
 val do_cofixpoint_interactive :

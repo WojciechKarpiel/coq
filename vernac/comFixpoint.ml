@@ -121,13 +121,32 @@ let interp_fix_ccl ~program_mode sigma impls (env,_) fix =
   let r = Retyping.relevance_of_type env sigma c in
   sigma, (c, r, impl)
 
+
+(*
+let red_constant_body red_opt env sigma body = print_string "QheheQ\n"; match red_opt with
+  | None -> sigma, body
+  | Some red ->
+    let red, _ = Redexpr.reduction_of_red_expr env red in
+    red env sigma body
+
+*)
 let interp_fix_body ~program_mode env_rec sigma impls (_,ctx) fix ccl =
   let open EConstr in
-  Option.cata (fun body ->
-    let env = push_rel_context ctx env_rec in
-    let sigma, body = interp_casted_constr_evars ~program_mode env sigma ~impls body ccl in
-    sigma, Some (it_mkLambda_or_LetIn body ctx)) (sigma, None) (Vernacexpr.doce fix.Vernacexpr.body_def)
+      (*let aaaaq : Constrexpr.constr_expr option = (match fix.Vernacexpr.body_def with
+                 | None -> None
+                 | Some d -> red_constant_body d.Vernacexpr.red
+    )    in*)
+  Option.cata (fun (body : Vernacexpr.eloziom) ->
 
+      let env = push_rel_context ctx env_rec in
+     (*     let ro = match body.Vernacexpr.red with
+      |None -> None
+      | Some r -> Some (snd (Hook.get f_interp_redexp env sigma r)) in
+
+            let evs, x = red_constant_body ro env*)
+      let sigma, body = interp_casted_constr_evars ~program_mode env sigma ~impls body.Vernacexpr.expr ccl in
+    let () = print_string "xdddddd" in
+    sigma, Some (it_mkLambda_or_LetIn body ctx)) (sigma, None) (fix.Vernacexpr.body_def)
 let build_fix_type (_,ctx) ccl = EConstr.it_mkProd_or_LetIn ccl ctx
 
 let prepare_recursive_declaration fixnames fixrs fixtypes fixdefs =
@@ -320,10 +339,11 @@ let adjust_rec_order ~structonly binders rec_order =
   in
   Option.map (extract_decreasing_argument ~structonly) rec_order
 
-let do_fixpoint_common ?typing_flags (fixl : Vernacexpr.fixpoint_expr list) =
+let do_fixpoint_common ?typing_flags (fixl : (Vernacexpr.fixpoint_expr * (Redexpr.red_expr option)) list) =
   let fixl = List.map (fun fix ->
-      Vernacexpr.{ fix
-                   with rec_order = adjust_rec_order ~structonly:true fix.binders fix.rec_order }) fixl in
+      let () = () in
+      Vernacexpr.{ (fst fix)
+                   with rec_order = adjust_rec_order ~structonly:true (fst fix).binders (fst fix).rec_order }) fixl in
   let ntns = List.map_append (fun { Vernacexpr.notations } -> List.map Metasyntax.prepare_where_notation notations ) fixl in
   let (_, _, _, info as fix) = interp_fixpoint ~cofix:false ?typing_flags fixl in
   fixl, ntns, fix, List.map compute_possible_guardness_evidences info
@@ -333,7 +353,8 @@ let do_fixpoint_interactive ~scope ~poly ?typing_flags l : Declare.Proof.t =
   let lemma = declare_fixpoint_interactive_generic ~indexes:possible_indexes ~scope ~poly ?typing_flags fix ntns in
   lemma
 
-let do_fixpoint ~scope ~poly ?typing_flags ?using l =
+let do_fixpoint ~scope ~poly ?typing_flags ?using lq =
+  let l = List.map fst lq in
   let fixl, ntns, fix, possible_indexes = do_fixpoint_common ?typing_flags l in
   declare_fixpoint_generic ~indexes:possible_indexes ~scope ~poly ?typing_flags ?using fix ntns
 

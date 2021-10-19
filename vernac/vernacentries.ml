@@ -981,11 +981,22 @@ let vernac_fixpoint ~atts ~pm discharge l =
   let open DefAttributes in
   let scope = vernac_fixpoint_common ~atts discharge l in
   let typing_flags = atts.typing_flags in
+  let aa =  List.map (fun f -> (f,
+                                match f.body_def with
+                                | None -> None
+                                | Some xd -> match xd.red with
+                                  |None -> None
+                                  |Some r ->
+                                         let env = Global.env () in
+      let sigma = Evd.from_env env in
+      Some (snd (Hook.get f_interp_redexp env sigma r))
+
+                               )) l in
   if atts.program then
     (* XXX: Switch to the attribute system and match on ~atts *)
     ComProgramFixpoint.do_fixpoint ~pm ~scope ~poly:atts.polymorphic ?typing_flags ?using:atts.using l
   else
-    let () = ComFixpoint.do_fixpoint ~scope ~poly:atts.polymorphic ?typing_flags ?using:atts.using l in
+    let () = ComFixpoint.do_fixpoint ~scope ~poly:atts.polymorphic ?typing_flags ?using:atts.using aa in
     pm
 
 let vernac_cofixpoint_common ~atts discharge l =
