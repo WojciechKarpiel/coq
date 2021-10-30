@@ -418,6 +418,19 @@ let tclFOCUSID ?(nosuchgoal=tclZERO (NoSuchGoals 1)) id t =
         return result
   with Not_found -> nosuchgoal
 
+
+let tclFOCUSIDS ?(nosuchgoal=tclZERO (NoSuchGoals 0)) ( l : Names.Id.t list) t =
+  let open Proof in
+  Pv.get >>= fun initial ->
+  List.map (fun id ->
+      let ev = Evd.evar_key id initial.solution in
+      let comb = CList.map drop_state initial.comb in
+        let i = CList.index Evar.equal ev comb in
+          return (i ,i)
+    ) l >>= fun ids -> tclFOCUSLIST ~nosuchgoal ids t
+
+
+
 (** {7 Dispatching on goals} *)
 
 exception SizeMismatch of int*int

@@ -269,6 +269,8 @@ val tclFOCUSLIST : ?nosuchgoal:'a tactic ->  (int * int) list -> 'a tactic -> 'a
     number. Fails with [nosuchgoal], by default raising [NoSuchGoals 1]. *)
 val tclFOCUSID : ?nosuchgoal:'a tactic -> Names.Id.t -> 'a tactic -> 'a tactic
 
+val tclFOCUSIDS : ?nosuchgoal:'a tactic -> Names.Id.t list -> 'a tactic -> 'a tactic
+
 (** [tclTRYFOCUS i j t] behaves like {!tclFOCUS}, except that if the
     specified range doesn't correspond to existing goals, behaves like
     [tclUNIT ()] instead of failing. *)

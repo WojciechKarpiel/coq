@@ -314,9 +314,18 @@ GRAMMAR EXTEND Gram
         { let open Goal_select in
           Option.cata (fun l -> SelectList ((n, n) :: l)) (SelectNth n) l } ] ]
   ;
+  idxd:
+   [ [ test_bracket_ident; "["; id = ident; "]" -> {  id } ] ]
+  ;
+  ids_selector:
+     [ [ x = idxd;
+     l = OPT [ ","; l = LIST1 idxd SEP "," -> {l} ] ->
+       { let open Goal_select in
+         Option.cata (fun l -> SelectIds (x :: l)) (SelectId x) l  } ] ]
+  ;
   selector:
   [ [ l = range_selector_or_nth -> { l }
-    | test_bracket_ident; "["; id = ident; "]" -> { Goal_select.SelectId id } ] ]
+    | l = ids_selector -> { l } ] ]
   ;
   toplevel_selector:
     [ [ sel = selector; ":" -> { sel }

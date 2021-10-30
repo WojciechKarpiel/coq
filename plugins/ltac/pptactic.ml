@@ -523,6 +523,8 @@ let pr_goal_selector toplevel = let open Goal_select in function
   | SelectNth i -> int i ++ str ":"
   | SelectList l -> prlist_with_sep (fun () -> str ", ") pr_range_selector l ++ str ":"
   | SelectId id -> str "[" ++ Id.print id ++ str "]:"
+  | SelectIds ids -> str "[ HEHEHEE]:"
+
   | SelectAll -> assert toplevel; str "all:"
 
 let pr_goal_selector ~toplevel s =

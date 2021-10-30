@@ -20,6 +20,7 @@ type t =
   | SelectNth of int
   | SelectList of (int * int) list
   | SelectId of Id.t
+  | SelectIds of Id.t list
   | SelectAll
 
 val pr_goal_selector : t -> Pp.t

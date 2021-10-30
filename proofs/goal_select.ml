@@ -20,6 +20,7 @@ type t =
   | SelectNth of int
   | SelectList of (int * int) list
   | SelectId of Id.t
+  | SelectIds of Id.t list (* DOZRO: usunąć SelectId *)
   | SelectAll
 
 let pr_range_selector (i, j) =
@@ -35,6 +36,7 @@ let pr_goal_selector = function
      ++ prlist_with_sep pr_comma pr_range_selector l
      ++ str "]")
   | SelectId id -> Names.Id.print id
+  | SelectIds _ -> Pp.str "HAHAHA"
 
 let parse_goal_selector = function
   | "!" -> SelectAlreadyFocused
@@ -62,7 +64,11 @@ let get_default_goal_selector =
 let tclSELECT ?nosuchgoal g tac = match g with
   | SelectNth i -> Proofview.tclFOCUS ?nosuchgoal i i tac
   | SelectList l -> Proofview.tclFOCUSLIST ?nosuchgoal l tac
-  | SelectId id -> Proofview.tclFOCUSID ?nosuchgoal id tac
+  | SelectId id ->    print_string "JEDNO!!!!!!!!!!!\n!!!!!!!!!!!";
+    Proofview.tclFOCUSID ?nosuchgoal id tac
+  | SelectIds ids ->
+    print_string "IDS!!!!!!!!!!!!!!\n\n!!!!";
+    Proofview.tclFOCUSIDS ?nosuchgoal ( ids) tac (*EE*)
   | SelectAll -> tac
   | SelectAlreadyFocused ->
     let open Proofview.Notations in
